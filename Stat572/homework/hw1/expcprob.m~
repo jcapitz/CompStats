@@ -1,0 +1,9 @@
+function prob = expcprob( x,beta )
+% This function calculates P(X<x) for an exponential pdf
+% Exercise 2.1, Martinez
+    function probout = expcout(x,beta)
+        probout = (1./beta)*exp(-x./beta);
+    end
+quad(@(x)expcout(x,beta),0,x)
+end
+

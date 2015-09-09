@@ -1,0 +1,311 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>density_est2</title><meta name="generator" content="MATLAB 8.3"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-12-20"><meta name="DC.source" content="density_est2.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><pre class="codeinput"><span class="comment">% DENSITY ESTIMATION OF THE OLD FAITHFUL DATA</span>
+</pre><pre class="codeinput">addpath <span class="string">~/Documents/Stat572/CompStatsToolboxV2</span>
+<span class="comment">% use geyser data</span>
+load <span class="string">geyser</span>
+data = geyser; n = length(data);
+</pre><p>Use Normal Reference Rule for bin width of frequency histogram.</p><pre class="codeinput">h = 2.15*sqrt(var(data))*n^(-1/5);
+t0 = min(data)-1;
+tm = max(data)+1;
+bins = t0:h:tm;
+vk = histc(data,bins);
+vk(end) = [];
+fhat = vk/(n*h);
+bc = (t0+h/2):h:(tm-h/2);
+bar(bc,fhat,1,<span class="string">'w'</span>)
+hold <span class="string">on</span>
+xlabel(<span class="string">'X - variable'</span>)
+ylabel(<span class="string">'Probability Density Function'</span>)
+title(<span class="string">'Kernel Density Estimation'</span>)
+</pre><img vspace="5" hspace="5" src="density_est2_01.png" alt=""> <p>Monte Carlos Trials</p><pre class="codeinput">M = 100;
+<span class="comment">% choose an appropriate domain</span>
+x = linspace(40,110,5000); <span class="comment">% domain</span>
+<span class="comment">% sample size of MC sampling</span>
+n = 150;
+
+<span class="comment">% find the index for x = x0 = 80</span>
+x0ind = find(x&gt;79.999 &amp; x&lt;80.009);
+</pre><p>NORMAL KERNEL</p><pre class="codeinput"><span class="comment">% choose smoothing parameter</span>
+h = 1.06*std(data)*n^(-1/5);
+
+<span class="comment">% initialize vector for estimated pdf</span>
+fhat = zeros(size(x));
+
+<span class="keyword">for</span> j = 1:M
+    <span class="comment">% sample from geyser data</span>
+    ind = unidrnd(length(geyser),1,n);
+    data = geyser(ind);
+
+    <span class="comment">% evaluate using the normal kernel for each data point</span>
+    <span class="comment">% at all x in the domain</span>
+    <span class="keyword">for</span> i=1:n
+        <span class="comment">% get each kernel function evaluated at x</span>
+        <span class="comment">% centered at data and weighted by h</span>
+        f=exp(-(1/(2*h^2))*(x-data(i)).^2)/sqrt(2*pi)/h;
+        <span class="comment">% add each ith average f vector to get estimate pdf height</span>
+        fhat = fhat+f/(n);
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+<span class="comment">% this is the expected value of fhat based on the MC simulation</span>
+fhat = fhat./M;
+
+<span class="comment">% Calculate the expected value of the MSE for x = x0, normal kernel</span>
+<span class="comment">% estimate using entire geyser data</span>
+data = geyser;
+fhatg = zeros(size(x));
+<span class="keyword">for</span> i=1:n
+    <span class="comment">% get each kernel function evaluated at x</span>
+    <span class="comment">% centered at data and weighted by h</span>
+    f=exp(-(1/(2*h^2))*(x-data(i)).^2)/sqrt(2*pi)/h;
+    <span class="comment">% add each ith average f vector to get estimate pdf height</span>
+    fhatg = fhatg+f/(n);
+<span class="keyword">end</span>
+
+MSEn = mean((fhatg(x0ind)-fhat(x0ind)).^2);
+
+linenorm = plot(x,fhat,<span class="string">'--b'</span>);
+</pre><img vspace="5" hspace="5" src="density_est2_02.png" alt=""> <p>Density estimate using Epanechnikov</p><pre class="codeinput"><span class="comment">% adjust smoothing parameter for the Epanchnikov kernel</span>
+h = h*(30*sqrt(pi))^(1/5);
+
+<span class="comment">% initialize vector for estimated pdf</span>
+fhat = zeros(size(x));
+
+<span class="keyword">for</span> j = 1:M
+    <span class="comment">% sample from geyser data</span>
+    ind = unidrnd(length(geyser),1,n);
+    data = geyser(ind);
+
+    <span class="comment">% evaluate using the Epanchnikov kernel for each data point</span>
+    <span class="comment">% at all x in the domain</span>
+    <span class="keyword">for</span> i=1:n
+        <span class="comment">% set up the indicator function</span>
+        I = abs((x-data(i))/h)&lt;1;
+        <span class="comment">% get each kernel function evaluated at x</span>
+        <span class="comment">% centered at data</span>
+        f=(0.75*(1-(((x-data(i)).^2)/(h^2)))/h).*I;
+        fhat = fhat+f/(n);
+    <span class="keyword">end</span>
+<span class="keyword">end</span>
+
+<span class="comment">% this is the expected value of fhat based on the MC simulation</span>
+fhat = fhat./M;
+
+<span class="comment">% Calculate the MSE for x = x0, Epanchnikov kernel</span>
+<span class="comment">% estimate using entire geyser data</span>
+data = geyser;
+fhatg = zeros(size(x));
+    <span class="keyword">for</span> i=1:n
+        <span class="comment">% set up the indicator function</span>
+        I = abs((x-data(i))/h)&lt;1;
+        <span class="comment">% get each kernel function evaluated at x</span>
+        <span class="comment">% centered at data</span>
+        f=(0.75*(1-(((x-data(i)).^2)/(h^2)))/h).*I;
+        fhatg = fhatg+f/(n);
+    <span class="keyword">end</span>
+MSEe = mean((fhatg(x0ind)-fhat(x0ind)).^2);
+</pre><pre class="codeinput">lineepan = plot(x,fhat,<span class="string">'Color'</span>,<span class="string">'r'</span>);
+axis([40 110 0 .04])
+legend([linenorm,lineepan],<span class="string">'Normal Kernel Estimate'</span>,<span class="string">'Epanchnikov Kernel Estimate'</span>)
+hold <span class="string">off</span>
+
+fprintf(<span class="string">'\nMSE using Normal Kernel density estimation: %2.6d\n'</span>, MSEn)
+fprintf(<span class="string">'\nMSE using Epan Kernel density estimation: %2.6d\n'</span>, MSEe)
+</pre><pre class="codeoutput">
+MSE using Normal Kernel density estimation: 3.106776e-07
+
+MSE using Epan Kernel density estimation: 9.336941e-08
+</pre><img vspace="5" hspace="5" src="density_est2_03.png" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+% DENSITY ESTIMATION OF THE OLD FAITHFUL DATA
+%%
+addpath ~/Documents/Stat572/CompStatsToolboxV2
+% use geyser data
+load geyser
+data = geyser; n = length(data);
+%%
+% Use Normal Reference Rule for bin width
+% of frequency histogram.
+h = 2.15*sqrt(var(data))*n^(-1/5);
+t0 = min(data)-1;
+tm = max(data)+1;
+bins = t0:h:tm;
+vk = histc(data,bins);
+vk(end) = [];
+fhat = vk/(n*h);
+bc = (t0+h/2):h:(tm-h/2);
+bar(bc,fhat,1,'w')
+hold on
+xlabel('X - variable')
+ylabel('Probability Density Function')
+title('Kernel Density Estimation')
+%%
+% Monte Carlos Trials
+M = 100;
+% choose an appropriate domain
+x = linspace(40,110,5000); % domain
+% sample size of MC sampling
+n = 150;
+
+% find the index for x = x0 = 80
+x0ind = find(x>79.999 & x<80.009);    
+%%
+% NORMAL KERNEL
+
+% choose smoothing parameter
+h = 1.06*std(data)*n^(-1/5);
+
+% initialize vector for estimated pdf
+fhat = zeros(size(x));
+
+for j = 1:M
+    % sample from geyser data
+    ind = unidrnd(length(geyser),1,n);
+    data = geyser(ind);
+    
+    % evaluate using the normal kernel for each data point
+    % at all x in the domain    
+    for i=1:n
+        % get each kernel function evaluated at x
+        % centered at data and weighted by h
+        f=exp(-(1/(2*h^2))*(x-data(i)).^2)/sqrt(2*pi)/h;
+        % add each ith average f vector to get estimate pdf height
+        fhat = fhat+f/(n);
+    end
+end
+% this is the expected value of fhat based on the MC simulation
+fhat = fhat./M;
+
+% Calculate the expected value of the MSE for x = x0, normal kernel
+% estimate using entire geyser data
+data = geyser;
+fhatg = zeros(size(x));
+for i=1:n
+    % get each kernel function evaluated at x
+    % centered at data and weighted by h
+    f=exp(-(1/(2*h^2))*(x-data(i)).^2)/sqrt(2*pi)/h;
+    % add each ith average f vector to get estimate pdf height
+    fhatg = fhatg+f/(n);
+end
+
+MSEn = mean((fhatg(x0ind)-fhat(x0ind)).^2);
+
+linenorm = plot(x,fhat,'REPLACE_WITH_DASH_DASHb');
+%%
+% Density estimate using Epanechnikov
+
+% adjust smoothing parameter for the Epanchnikov kernel
+h = h*(30*sqrt(pi))^(1/5);
+
+% initialize vector for estimated pdf
+fhat = zeros(size(x));
+
+for j = 1:M
+    % sample from geyser data
+    ind = unidrnd(length(geyser),1,n);
+    data = geyser(ind);
+    
+    % evaluate using the Epanchnikov kernel for each data point
+    % at all x in the domain
+    for i=1:n
+        % set up the indicator function
+        I = abs((x-data(i))/h)<1;
+        % get each kernel function evaluated at x
+        % centered at data
+        f=(0.75*(1-(((x-data(i)).^2)/(h^2)))/h).*I;
+        fhat = fhat+f/(n);
+    end
+end
+
+% this is the expected value of fhat based on the MC simulation
+fhat = fhat./M;
+
+% Calculate the MSE for x = x0, Epanchnikov kernel
+% estimate using entire geyser data
+data = geyser;
+fhatg = zeros(size(x));
+    for i=1:n
+        % set up the indicator function
+        I = abs((x-data(i))/h)<1;
+        % get each kernel function evaluated at x
+        % centered at data
+        f=(0.75*(1-(((x-data(i)).^2)/(h^2)))/h).*I;
+        fhatg = fhatg+f/(n);
+    end
+MSEe = mean((fhatg(x0ind)-fhat(x0ind)).^2);
+%%
+lineepan = plot(x,fhat,'Color','r');
+axis([40 110 0 .04])
+legend([linenorm,lineepan],'Normal Kernel Estimate','Epanchnikov Kernel Estimate')
+hold off
+
+fprintf('\nMSE using Normal Kernel density estimation: %2.6d\n', MSEn)
+fprintf('\nMSE using Epan Kernel density estimation: %2.6d\n', MSEe)
+##### SOURCE END #####
+--></body></html>

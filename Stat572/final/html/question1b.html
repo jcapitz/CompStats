@@ -1,0 +1,228 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>question1b</title><meta name="generator" content="MATLAB 8.3"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2014-12-10"><meta name="DC.source" content="question1b.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><pre class="codeinput">addpath <span class="string">~/Documents/Stat572/CompStatsToolboxV2</span>
+load(<span class="string">'Finalpr1.mat'</span>)
+</pre><p>ESTIMATE PARAMETERS WITH EM ALGO initialize parameters</p><pre class="codeinput">muin = [2 5]; piesin = [0.5 0.5]; varin = [1 1]; data = y;
+max_it = 100; tol = 0.001;
+<span class="comment">% run EM</span>
+[pies,mus,vars]=csfinmix(data,muin,varin,piesin,max_it,tol);
+<span class="comment">% set up likelihood function</span>
+likelihood = @(x,mu1,mu2,sigma1,sigma2,delta)<span class="keyword">...</span>
+    exp(sum(log(delta*normpdf(x,mu1,sqrt(sigma1))+<span class="keyword">...</span>
+    (1-delta)*normpdf(x,mu2,sqrt(sigma2)))));
+</pre><p>GENERATE THE MC Generate n samples in the chain.</p><pre class="codeinput">n = 1000; <span class="comment">% random sample size</span>
+burn = 0.1*n; <span class="comment">% burn-in rate</span>
+M = 100; <span class="comment">% set up Monte Carlo iterations</span>
+MCmu = zeros(M,1); MCvar = zeros(M,1);
+mixrate = zeros(M,1); <span class="comment">% count the mix rate</span>
+<span class="comment">% OPTIMIZER</span>
+BETAVAR = @(theta) theta(1)*theta(2)/((theta(1) + theta(2))^2*(theta(1)+<span class="keyword">...</span>
+    theta(2)+1))-0.000865;
+theta = fminsearch(BETAVAR,[1, 1]); scale = 10^15;
+<span class="keyword">for</span> j = 1:M
+    <span class="comment">% initialize the chain</span>
+    mc = zeros(1,n);
+    mc(1) = rand(1); <span class="comment">% generate the starting point</span>
+    mixcount = 0; <span class="comment">% count the mix rate</span>
+    <span class="keyword">for</span> i = 2:n
+        <span class="comment">% generate a candidate from the chosen prior</span>
+        x = betarnd(theta(1)/scale,theta(2)/scale);
+        <span class="comment">% generate a uniform for comparison</span>
+        u = rand(1);
+        alphaf = min([1, likelihood(data,mus(1),mus(2),vars(1),vars(2),x)/<span class="keyword">...</span>
+            (likelihood(data,mus(1),mus(2),vars(1),vars(2),mc(i-1)))]);
+        <span class="keyword">if</span> u &lt;= alphaf
+            mc(i) = x;
+            mixcount = mixcount+1;
+        <span class="keyword">else</span>
+            mc(i) = mc(i-1);
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+    MCmu(j) = mean(mc(burn:n)); MCvar(j) = var(mc(burn:n));
+    mixrate(j) = mixcount/n;
+<span class="keyword">end</span>
+</pre><p>PROVIDE HISTOGRAM</p><pre class="codeinput">figure(1)
+subplot(211)
+plot(mc(burn:n))
+title(<span class="string">'Markov Chain Plot'</span>)
+[fhath, bc] = hist(mc(burn:n));
+fhath = fhath/((bc(2)-bc(1))*sum(fhath));
+subplot(212)
+bar(bc,fhath,1,<span class="string">'b'</span>)
+title(<span class="string">'MC Histogram'</span>)
+xlabel(<span class="string">'random sample data'</span>)
+
+<span class="comment">% MIX RATE</span>
+mixrate = mean(mixrate);
+
+<span class="comment">% PROVIDE MC ESTIMATE OF MEAN AND VARIANCE</span>
+MCxbar = mean(MCmu); MCssq = mean(MCvar);
+
+<span class="comment">% CONSTRUCT 90% CI FOR MEAN OF DELTA</span>
+<span class="comment">% Get the value for z_alpha/2</span>
+alpha = 0.1;
+zlo = norminv(1-alpha/2,0,1);
+zhi = norminv(alpha/2,0,1);
+thetalo = MCxbar - zlo*sqrt(MCssq/n);
+thetaup = MCxbar - zhi*sqrt(MCssq/n);
+fprintf(<span class="string">'\nThe Monte Carlo Estimate of the mean is %2.6f\n'</span>, MCxbar)
+fprintf(<span class="string">'\nThe Monte Carlo Estimate of the variance is %2.6f\n'</span>, MCssq)
+fprintf(<span class="string">'\nThe 90 percent Confidence Interval is: (%2.6f, %2.6f)\n'</span>,thetalo, thetaup)
+fprintf(<span class="string">'\nThe mix rate is %2.2f percent.\n'</span>, mixrate*100)
+</pre><pre class="codeoutput">
+The Monte Carlo Estimate of the mean is 0.835532
+
+The Monte Carlo Estimate of the variance is 0.000120
+
+The 90 percent Confidence Interval is: (0.834963, 0.836101)
+
+The mix rate is 63.86 percent.
+</pre><img vspace="5" hspace="5" src="question1b_01.png" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2014a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+addpath ~/Documents/Stat572/CompStatsToolboxV2
+load('Finalpr1.mat')
+%%
+% ESTIMATE PARAMETERS WITH EM ALGO
+% initialize parameters
+muin = [2 5]; piesin = [0.5 0.5]; varin = [1 1]; data = y;
+max_it = 100; tol = 0.001;
+% run EM
+[pies,mus,vars]=csfinmix(data,muin,varin,piesin,max_it,tol);
+% set up likelihood function
+likelihood = @(x,mu1,mu2,sigma1,sigma2,delta)...
+    exp(sum(log(delta*normpdf(x,mu1,sqrt(sigma1))+...
+    (1-delta)*normpdf(x,mu2,sqrt(sigma2)))));
+%%
+% GENERATE THE MC
+% Generate n samples in the chain.
+n = 1000; % random sample size
+burn = 0.1*n; % burn-in rate
+M = 100; % set up Monte Carlo iterations
+MCmu = zeros(M,1); MCvar = zeros(M,1);
+mixrate = zeros(M,1); % count the mix rate
+% OPTIMIZER
+BETAVAR = @(theta) theta(1)*theta(2)/((theta(1) + theta(2))^2*(theta(1)+...
+    theta(2)+1))-0.000865;
+theta = fminsearch(BETAVAR,[1, 1]); scale = 10^15;
+for j = 1:M
+    % initialize the chain
+    mc = zeros(1,n);
+    mc(1) = rand(1); % generate the starting point
+    mixcount = 0; % count the mix rate
+    for i = 2:n
+        % generate a candidate from the chosen prior
+        x = betarnd(theta(1)/scale,theta(2)/scale);
+        % generate a uniform for comparison
+        u = rand(1);
+        alphaf = min([1, likelihood(data,mus(1),mus(2),vars(1),vars(2),x)/...
+            (likelihood(data,mus(1),mus(2),vars(1),vars(2),mc(i-1)))]);
+        if u <= alphaf
+            mc(i) = x;
+            mixcount = mixcount+1;
+        else
+            mc(i) = mc(i-1);
+        end
+    end
+    MCmu(j) = mean(mc(burn:n)); MCvar(j) = var(mc(burn:n));
+    mixrate(j) = mixcount/n;
+end
+%%
+% PROVIDE HISTOGRAM
+figure(1)
+subplot(211)
+plot(mc(burn:n))
+title('Markov Chain Plot')
+[fhath, bc] = hist(mc(burn:n));
+fhath = fhath/((bc(2)-bc(1))*sum(fhath));
+subplot(212)
+bar(bc,fhath,1,'b')
+title('MC Histogram')
+xlabel('random sample data')
+
+% MIX RATE
+mixrate = mean(mixrate);
+
+% PROVIDE MC ESTIMATE OF MEAN AND VARIANCE
+MCxbar = mean(MCmu); MCssq = mean(MCvar);
+
+% CONSTRUCT 90% CI FOR MEAN OF DELTA
+% Get the value for z_alpha/2
+alpha = 0.1;
+zlo = norminv(1-alpha/2,0,1);
+zhi = norminv(alpha/2,0,1);
+thetalo = MCxbar - zlo*sqrt(MCssq/n);
+thetaup = MCxbar - zhi*sqrt(MCssq/n);
+fprintf('\nThe Monte Carlo Estimate of the mean is %2.6f\n', MCxbar)
+fprintf('\nThe Monte Carlo Estimate of the variance is %2.6f\n', MCssq)
+fprintf('\nThe 90 percent Confidence Interval is: (%2.6f, %2.6f)\n',thetalo, thetaup)
+fprintf('\nThe mix rate is %2.2f percent.\n', mixrate*100)
+
+
+##### SOURCE END #####
+--></body></html>
